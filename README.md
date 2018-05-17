@@ -155,7 +155,7 @@ secret "real-world-secret" created
 
 ### Create Deployment and Service Account
 
-Create the Deployment of the Application running:
+Create the Application deployment running the following:
 
 ```
 $kubectl create -f ./k8s/real-world-deployment.yaml
@@ -254,7 +254,24 @@ You can create your Ingress using [Nginx](https://kubernetes.github.io/ingress-n
 For this project I used [Traefik](https://docs.traefik.io/), as Traefik says, a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
 ![Traefik](https://docs.traefik.io/img/architecture.png "Traefik")
 
-To create the Ingress controller, run the following:
+To create the Ingress controller, you must edit the "./k8s/traefik/traefik-deployment.yaml".
+
+change this:
+
+```
+  externalIPs:
+    - your.public.ip.here
+    - your.public.ip.here
+```
+
+to your service provider, for example :
+
+```
+  loadBalancerIP: 11.22.33.44
+  type: LoadBalancer
+```
+
+ run the following:
 
 ```
 $kubectl create -f ./k8s/traefik/
