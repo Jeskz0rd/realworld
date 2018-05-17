@@ -1,0 +1,124 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+  namespace: real-world
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name:  real-world
+    namespace: real-world
+    labels:
+      k8s-app: real-world
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1 
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: real-world
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image:  jesk/realworld:1.0
+        name:  real-world
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "256M"
+        env:
+        - name:  MIX_ENV
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key: dev
+#              key:  test
+#              key: prod
+        - name:  DB_USER
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  user
+        - name:  DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  password
+        - name:  DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  name
+        - name:  DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  host
+        - name:  PORT
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  port
+        ports:
+        - containerPort:  4000
+          name:  real-world
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  db
+  labels:
+    name:  db
+  namespace: real-world
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name:  db
+    spec:
+      containers:
+      - image:  postgres:9.6.8-alpine
+        name:  db
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "256M"
+        imagePullPolicy: Always
+        env:
+        - name:  POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  user
+        - name:  POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  password
+        - name:  POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name:  real-world-secret
+              key:  name
+        ports:
+        - containerPort:  5432
+          name:  db
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      volumes:
+        - name: data
+          emptyDir: {}

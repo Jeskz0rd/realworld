@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  db
+  namespace: real-world
+  labels:
+    name: real-world
+spec:
+  selector:
+    name: db
+  ports:
+  - name:  db 
+    port:  5432
+    targetPort:  5432
