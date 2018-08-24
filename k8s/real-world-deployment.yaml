@@ -90,7 +90,7 @@ spec:
         name:  db
     spec:
       containers:
-      - image:  postgres:9.6.8-alpine
+      - image:  postgres:9.6.10-alpine
         name:  db
         resources:
           requests:
