@@ -16,7 +16,7 @@ services:
       - /var/data/postgresql:/var/lib/postgresql/data
 
   phoenix:
-    image: jesk/realworld:1.0
+    image: jesk/realworld:1.1
     environment:
       DB_USER: "phoenix"
       DB_PASSWORD: "phoenix"
