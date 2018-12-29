@@ -1,8 +1,8 @@
-FROM alpine:3.7
+FROM alpine:3.8
 # IMAGE MAINTAINER
 LABEL maintainer="Jeferson Pereira", \
       mail="pereira.jeferson@outlook.com", \
-      version="1.0"
+      version="1.1"
 
 # ENV VARIABLES
 ENV DB_USER="" \
